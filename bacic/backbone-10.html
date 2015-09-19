@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script type="text/javascript" src="../libs/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="../libs/underscore-min.js"></script>
+    <script type="text/javascript" src="../libs/backbone-min.js"></script>
+    <script type="text/javascript">
+        Backbone.sync = function(method,model){
+            alert(method + ":" + JSON.stringify(model));
+            model.id = 1;
+        };
+        var C = Backbone.Collection.extend({
+            "initialize":function(){
+                this.on("reset",function(){
+                    alert(1230);
+                });
+            },
+            "url":"/users"
+        });
+        var models = new C;
+        models.fetch();
+    </script>
+</head>
+<body>
+
+</body>
+</html>
