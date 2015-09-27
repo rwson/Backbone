@@ -14,6 +14,8 @@ app.TodoView = Backbone.View.extend({
     "template": _.template($("#item-template").html()),
 
     "events":{
+        "click .toggle":"toggleCompleted",
+        "click .destroy":"clear",
         "dbclick label":"edit",
         "keypress .edit":"updateOnEnter",
         "blur .edit":"close"
@@ -21,12 +23,38 @@ app.TodoView = Backbone.View.extend({
 
     "initialize":function(){
         this.listenTo(this.model,"change",this.render);
+        this.listenTo(this.model,"destroy",this.render);
+        this.listenTo(this.model,"visible",this.render);
     },
 
     "render":function(){
-        this.$el.html(this.template(this.model.toJSON()));
+        this.$el.toggleClass("completed",this.model.get("completed"));
+        this.toggleVisible();
+
         this.$input = this.$(".edit");
         return this;
+    },
+
+    "toggleVisible":function(){
+        this.$el.toggleClass("hidden",this.isHidden());
+    },
+
+    "isHidden":function(){
+        return this.model.get("completed") ? app.TodoFilter === "active" : app.TodoFilter === "completed";
+    },
+
+    /**
+     * 复选框上的toggle-completed事件
+     */
+    "toggleCompleted":function(){
+        this.model.toggle();
+    },
+
+    /**
+     * 删除当前todo项
+     */
+    "clear":function(){
+        this.model.destroy();
     },
 
     /**
@@ -46,6 +74,8 @@ app.TodoView = Backbone.View.extend({
             this.model.save({
                 "title":value
             });
+        }else{
+            this.clear();
         }
         this.$el.removeClass("editing");
         this.$input.blur();
