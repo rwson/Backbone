@@ -70,7 +70,7 @@ app.AppView = Backbone.View.extend({
      * 对当前所有todo项进行迭代,触发每个todo项的addOne方法
      */
     "addAll":function(){
-        this.$("#todo-list").html("");
+        $("#todo-list").html("");
         app.Todos.each(this.addOne,this);
     },
 

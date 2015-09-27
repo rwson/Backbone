@@ -28,6 +28,7 @@ app.TodoView = Backbone.View.extend({
     },
 
     "render":function(){
+        $("#todo-list").append(this.$el.html(this.template(this.model.toJSON())));
         this.$el.toggleClass("completed",this.model.get("completed"));
         this.toggleVisible();
 
