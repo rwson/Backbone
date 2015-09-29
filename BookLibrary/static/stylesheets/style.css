@@ -9,11 +9,13 @@ body {
     background: #fff;
     float: left;
     margin: 5px;
+    position: relative;
 }
 
 .bookContainer img{
     float: left;
     margin: 10px;
+    width: 73px;
 }
 
 .bookContainer ul{
@@ -59,4 +61,10 @@ body {
     clear: both;
     font-size: 0;
     line-height: 0;
+}
+
+.delete{
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
 }

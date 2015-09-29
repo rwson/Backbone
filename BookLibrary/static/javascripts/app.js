@@ -7,7 +7,8 @@
 var app = app || {};
 
 $(function(){
-    var book = [
+
+/*    var book = [
         {
             "coverImage":"images/default.jpg",
             "title":"No title",
@@ -43,7 +44,7 @@ $(function(){
             "releaseDate":"Unknown",
             "keywords":"None"
         }
-    ];
+    ];*/
 
-    new app.LibraryView(book);
+    new app.LibraryView();
 });
