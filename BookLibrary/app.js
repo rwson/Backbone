@@ -71,6 +71,17 @@ app.put('/api/books/:id',function(req,res){
     });
 });
 
+/**
+ * 根据id删除某本书
+ */
+app.delete('/api/books/:id',function(req,res){
+    return BookModel.remove({
+        '_id':req.params.id
+    },function(err,book){
+        return err ? console.log(err) : console.log('success') && res.send(book);
+    });
+});
+
 http.createServer(app).listen(app.get('port'), function () {
     console.log('Express server listening on port ' + app.get('port'));
 });
