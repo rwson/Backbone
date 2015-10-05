@@ -10,7 +10,6 @@ var app = app || {};
 app.Lbrary = Backbone.Collection.extend({
 
     "model":app.Book,
-
     "url":"/api/books"
 
 });

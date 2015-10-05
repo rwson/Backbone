@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Backbone 图书管理系统</title>
+    <link href="jquery-ui/jquery-ui.min.css" rel="stylesheet" type="text/css">
     <link href="stylesheets/style.css" rel="stylesheet" type="text/css">
 </head>
 <body>
@@ -31,7 +32,6 @@
             <li><%= title %></li>
             <li><%= author %></li>
             <li><%= $.format.date(new Date(releaseDate),'MMMM yyyy') %></li>
-            <li><%= keywords %></li>
             <li><% _.each(keywords,function(keyobj){ %><%= keyobj.keyword %> <% }); %></li>
         </ul>
         <button class="delete">Delete</button>
@@ -39,6 +39,7 @@
 
     <script src="javascripts/libs/jquery-1.7.2.min.js"></script>
     <script src="javascripts/libs/jquery.dateFormat.min.js"></script>
+    <script src="jquery-ui/jquery-ui.min.js"></script>
     <script src="javascripts/libs/underscore-min.js"></script>
     <script src="javascripts/libs/backbone-min.js"></script>
     <script src="javascripts/models/book.js"></script>

@@ -6,13 +6,18 @@ var express = require('express');
 var http = require('http');
 var path = require('path');
 var mongoose = require('mongoose');
+var fs = require('fs');
 
 mongoose.connect("mongodb://localhost:27017/bookLibrary");
 
+var keywords = new mongoose.Schema({
+    "keyword":String
+});
 var Book = new mongoose.Schema({
     "title": String,
     "author": String,
-    "releaseDate": Date
+    "releaseDate": Date,
+    "keywords":[keywords]
 });
 
 var BookModel = mongoose.model('Book', Book);
@@ -39,7 +44,11 @@ app.configure(function () {
  */
 app.get('/api/books',function(req,res){
     return BookModel.find(function(err,books){
-        return err ? console.log(err) : res.send(books);
+        err && function(){
+            return console.log(err)
+        }();
+        console.log('success');
+        res.send(books);
     });
 });
 
@@ -50,10 +59,15 @@ app.post('/api/books',function(req,res){
     var book = new BookModel({
         'title':req.body.title,
         'author':req.body.author,
-        'releaseDate':req.body.releaseDate
+        'releaseDate':req.body.releaseDate,
+        'keywords':req.body.keywords
     });
     book.save(function(err){
-        return err ? console.log(err) : console.log('success') && res.send(book);
+        err && function(){
+            return console.log(err)
+        }();
+        console.log('success');
+        res.send(book);
     });
 });
 
@@ -65,8 +79,13 @@ app.put('/api/books/:id',function(req,res){
         book.title = req.body.title;
         book.author = req.body.author;
         book.releaseDate = req.body.releaseDate;
+        book.keywords = req.body.keywords;
         return book.save(function(err){
-            return err ? console.log(err) : console.log('success') && res.send(book);
+            err && function(){
+                return console.log(err)
+            }();
+            console.log('success');
+            res.send(book);
         });
     });
 });
@@ -78,7 +97,11 @@ app.delete('/api/books/:id',function(req,res){
     return BookModel.remove({
         '_id':req.params.id
     },function(err,book){
-        return err ? console.log(err) : console.log('success') && res.send(book);
+        err && function(){
+            return console.log(err)
+        }();
+        console.log('success');
+        res.send(book);
     });
 });
 
