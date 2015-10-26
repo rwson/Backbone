@@ -12,7 +12,8 @@ app.LibraryView = Backbone.View.extend({
     "el": "#books",
 
     "events": {
-        "click #add": "addBook"
+        "click #add": "addBook",
+        "change #coverImage": "upload"
     },
 
     "initialize": function () {
@@ -54,12 +55,10 @@ app.LibraryView = Backbone.View.extend({
             processData: false,
             success: function (data) {
                 if (200 === data.code) {
-                    formData["coverImage"] = data["msg"]["url"];
-                    _this.collection.create(formData);
+                    alert(data.msg.url);
                 } else {
                     alert("图片上传失败");
                 }
-
             },
             error: function () {
                 alert("上传失败,请重试！");

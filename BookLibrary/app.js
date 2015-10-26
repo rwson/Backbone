@@ -47,7 +47,7 @@ app.configure(function () {
  */
 app.post("/upload", multipart(), function (req, res) {
     var filename = req.files.files.originalFilename || path.basename(req.files.files.ws.path);
-    var targetPath = path.dirname(__filename) + "/public/" + filename;
+    var targetPath = express.static(path.join(__dirname, "static/upload"));
     fs.createReadStream(req.files.files.ws.path).pipe(fs.createWriteStream(targetPath));
     res.json({code: 200,
         msg: {
