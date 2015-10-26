@@ -9,57 +9,107 @@ var app = app || {};
 
 app.LibraryView = Backbone.View.extend({
 
-    "el":"#books",
+    "el": "#books",
 
-    "events":{
-        "click #add":"addBook"
+    "events": {
+        "click #add": "addBook"
     },
 
-    "initialize":function(){
+    "initialize": function () {
         this.collection = new app.Lbrary();
         this.collection.fetch({
-            "reset":true
+            "reset": true
         });
 
         this.render();
 
-        this.listenTo(this.collection,"add",this.renderBook);
-        this.listenTo(this.collection,"reset",this.render);
+        this.listenTo(this.collection, "add", this.renderBook);
+        this.listenTo(this.collection, "reset", this.render);
     },
 
-    "render":function(){
-        this.collection.each(function(item){
+    "render": function () {
+        this.collection.each(function (item) {
             this.renderBook(item);
-        },this);
+        }, this);
     },
 
-    "renderBook":function(item){
+    "renderBook": function (item) {
         var bookView = new app.BookView({
-            "model":item
+            "model": item
         });
         this.$el.append(bookView.render().el);
     },
 
-    "addBook":function(e){
-        e.preventDefault();
-        var formData = {};
-        $("#addBook div").children("input").each(function(index,ele){
-            if($(ele).val() != ""){
-                if(ele.id == "keywords"){
-                    formData[ele.id] = [];
-                    _.each($(ele).val().split(" "),function(item){
-                        formData[ele.id].push({
-                            "keyword":item
-                        });
-                    });
-                }else if(ele.id == "releaseDate"){
-                    formData[ele.id] = $("#releaseDate").datepicker("getDate").getTime();
-                }else{
-                    formData[ele.id] = $(ele).val();
+    "upload":function(){
+        var formData = {},
+            formData = new FormData($("#frmUploadFile")[0]),
+            _this = this;
+        $.ajax({
+            url: '/upload',
+            type: 'POST',
+            data: formData,
+            async: false,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function (data) {
+                if (200 === data.code) {
+                    formData["coverImage"] = data["msg"]["url"];
+                    _this.collection.create(formData);
+                } else {
+                    alert("图片上传失败");
                 }
+
+            },
+            error: function () {
+                alert("上传失败,请重试！");
             }
         });
-        this.collection.create(formData);
+    },
+
+    "addBook": function (e) {
+        e.preventDefault();
+        var formData = {},
+            formData = new FormData($("#frmUploadFile")[0]),
+            _this = this;
+        $.ajax({
+            url: '/upload',
+            type: 'POST',
+            data: formData,
+            async: false,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function(data){
+                if(200 === data.code) {
+                    console.log(data);
+                    $("#addBook div").children("input").each(function (index, ele) {
+                        if ($(ele).val() != "") {
+                            if (ele.id == "keywords") {
+                                formData[ele.id] = [];
+                                _.each($(ele).val().split(" "), function (item) {
+                                    formData[ele.id].push({
+                                        "keyword": item
+                                    });
+                                });
+                            } else if (ele.id == "releaseDate") {
+                                formData[ele.id] = $("#releaseDate").datepicker("getDate").getTime();
+                            } else {
+                                formData[ele.id] = $(ele).val();
+                            }
+                        }
+                    });
+                    formData["coverImage"] = data["msg"]["url"];
+                    alert(data["url"]);
+                    _this.collection.create(formData);
+                } else {
+                    alert("图片上传失败");
+                }
+            },
+            error: function(){
+                alert("上传失败,请重试！");
+            }
+        });
     }
 
 });

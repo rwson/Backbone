@@ -8,44 +8,6 @@ var app = app || {};
 
 $(function(){
 
-/*    var book = [
-        {
-            "coverImage":"images/default.jpg",
-            "title":"No title",
-            "author":"Unknown",
-            "releaseDate":"Unknown",
-            "keywords":"None"
-        },
-        {
-            "coverImage":"images/default.jpg",
-            "title":"No title",
-            "author":"Unknown",
-            "releaseDate":"Unknown",
-            "keywords":"None"
-        },
-        {
-            "coverImage":"images/default.jpg",
-            "title":"No title",
-            "author":"Unknown",
-            "releaseDate":"Unknown",
-            "keywords":"None"
-        },
-        {
-            "coverImage":"images/default.jpg",
-            "title":"No title",
-            "author":"Unknown",
-            "releaseDate":"Unknown",
-            "keywords":"None"
-        },
-        {
-            "coverImage":"images/default.jpg",
-            "title":"No title",
-            "author":"Unknown",
-            "releaseDate":"Unknown",
-            "keywords":"None"
-        }
-    ];*/
-
     $("#releaseDate").datepicker();
 
     new app.LibraryView();

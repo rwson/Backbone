@@ -9,10 +9,12 @@
 <body>
 
     <div id="books">
-        <form id="addBook" action="#">
+        <div id="addBook">
             <div>
                 <label for="coverImage">CoverImage:</label>
-                <input type="file" id="coverImage">
+                <form class = "form-horizontal" enctype="multipart/form-data" method="post" id = "frmUploadFile">
+                    <input type = "file" name = "files" id="coverImage" class = "form-control"/>
+                </form>
                 <label for="title">Title:</label>
                 <input type="text" id="title">
                 <label for="author">Author:</label>
@@ -23,7 +25,7 @@
                 <input type="text" id="keywords">
                 <button id="add">Add</button>
             </div>
-        </form>
+        </div>
     </div>
 
     <script id="bookTemplate" type="text/template">
@@ -31,13 +33,14 @@
         <ul>
             <li><%= title %></li>
             <li><%= author %></li>
-            <li><%= $.format.date(new Date(releaseDate),'MMMM yyyy') %></li>
+            <li><%= $.format.date(new Date(releaseDate),"MMMM yyyy") %></li>
             <li><% _.each(keywords,function(keyobj){ %><%= keyobj.keyword %> <% }); %></li>
         </ul>
         <button class="delete">Delete</button>
     </script>
 
     <script src="javascripts/libs/jquery-1.7.2.min.js"></script>
+    <script src="javascripts/libs/ajaxfileupload.js"></script>
     <script src="javascripts/libs/jquery.dateFormat.min.js"></script>
     <script src="jquery-ui/jquery-ui.min.js"></script>
     <script src="javascripts/libs/underscore-min.js"></script>
