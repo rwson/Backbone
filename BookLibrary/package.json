@@ -10,6 +10,7 @@
     "mongoose": "3.5.5",
     "path": "0.4.9",
     "morgan": "~1.3.0",
-    "connect-multiparty": "~1.2.5"
+    "connect-multiparty": "~1.2.5",
+    "formidable" : "latest"
   }
 }

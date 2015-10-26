@@ -7,9 +7,9 @@ var http = require("http");
 var path = require("path");
 var mongoose = require("mongoose");
 var fs = require("fs");
-var formidable = require("formidable");
 var templateUrl = "";
-var multipart = require('connect-multiparty');
+var multipart = require("connect-multiparty");
+var formidable = require("formidable");
 
 mongoose.connect("mongodb://localhost:27017/bookLibrary");
 
@@ -19,6 +19,7 @@ var keywords = new mongoose.Schema({
 var Book = new mongoose.Schema({
     "title": String,
     "author": String,
+    "coverImage":String,
     "releaseDate": Date,
     "keywords": [keywords]
 });
@@ -45,16 +46,44 @@ app.configure(function () {
 /**
  * 上传文件
  */
-app.post("/upload", multipart(), function (req, res) {
-    var filename = req.files.files.originalFilename || path.basename(req.files.files.ws.path);
-    var targetPath = express.static(path.join(__dirname, "static/upload"));
-    fs.createReadStream(req.files.files.ws.path).pipe(fs.createWriteStream(targetPath));
-    res.json({code: 200,
-        msg: {
-            url: "http://" + req.headers.host + "/" + filename
+app.post("/upload", function (req, res) {
+    var form = new formidable.IncomingForm(),
+        extName = "",
+        targetPath = "";
+    form.encoding = "utf-8";
+    form.keepExtensions = true;
+    form.maxFieldsSize = 2 * 1024 * 1024;
+    form.parse(req, function (err, fields, files) {
+        err && function () {
+            throw err;
+        }();
+        switch (files["files"]["type"]) {
+            case "image/pjpeg":
+            case "image/jpeg":
+                //  jpg格式
+                extName = "jpg";
+                break;
+            case "image/png":
+            case "image/x-png":
+                //  png格式
+                extName = "png";
+                break;
+            default :
+                res.send(400,{
+                    "code":400,
+                    "msg":"上传失败!请检查文件类型!"
+                });
+                return;
         }
+        targetPath = "static/upload/" + Date.now() + "." + extName;
+        fs.renameSync(files["files"]["path"], targetPath);
+        res.send(200,{
+            "code": 200,
+            "url":targetPath.replace(/^static\//i,"")
+        });
     });
 });
+
 
 /**
  * 获取图书列表
@@ -77,7 +106,8 @@ app.post("/api/books", function (req, res) {
         "title": req.body.title,
         "author": req.body.author,
         "releaseDate": req.body.releaseDate,
-        "keywords": req.body.keywords
+        "keywords": req.body.keywords,
+        "coverImage":req.body.coverImage
     });
     book.save(function (err) {
         err && function () {

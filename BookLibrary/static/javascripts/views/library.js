@@ -41,31 +41,6 @@ app.LibraryView = Backbone.View.extend({
         this.$el.append(bookView.render().el);
     },
 
-    "upload":function(){
-        var formData = {},
-            formData = new FormData($("#frmUploadFile")[0]),
-            _this = this;
-        $.ajax({
-            url: '/upload',
-            type: 'POST',
-            data: formData,
-            async: false,
-            cache: false,
-            contentType: false,
-            processData: false,
-            success: function (data) {
-                if (200 === data.code) {
-                    alert(data.msg.url);
-                } else {
-                    alert("图片上传失败");
-                }
-            },
-            error: function () {
-                alert("上传失败,请重试！");
-            }
-        });
-    },
-
     "addBook": function (e) {
         e.preventDefault();
         var formData = {},
@@ -81,7 +56,6 @@ app.LibraryView = Backbone.View.extend({
             processData: false,
             success: function(data){
                 if(200 === data.code) {
-                    console.log(data);
                     $("#addBook div").children("input").each(function (index, ele) {
                         if ($(ele).val() != "") {
                             if (ele.id == "keywords") {
@@ -98,8 +72,7 @@ app.LibraryView = Backbone.View.extend({
                             }
                         }
                     });
-                    formData["coverImage"] = data["msg"]["url"];
-                    alert(data["url"]);
+                    formData["coverImage"] = data["url"];
                     _this.collection.create(formData);
                 } else {
                     alert("图片上传失败");
