@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Backbone 图书管理系统</title>
+    <link href="jquery-ui/jquery-ui.min.css" rel="stylesheet" type="text/css">
+    <link href="stylesheets/style.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<div id="books">
+    <a href="#/posts/120">Post 120</a>
+    <a href="#/download/user/images/hey.gif">download gif</a>
+    <a href="#/dashboard/graph">Load Route/Action View</a>
+</div>
+
+<script src="javascripts/libs/jquery-1.7.2.min.js"></script>
+<script src="javascripts/libs/underscore-min.js"></script>
+<script src="javascripts/libs/backbone-min.js"></script>
+<script>
+    $(function () {
+        var AppRouter = Backbone.Router.extend({
+            routes: {
+                "/posts/:id" : "getPost",
+                "/download/*path": "downloadFile",  //对应的链接为<a href="#/download/user/images/hey.gif">download gif</a>
+                "/:route/:action": "loadView",      //对应的链接为<a href="#/dashboard/graph">Load Route/Action View</a>
+                "*actions" : "defaultRoute"
+            },
+            getPost: function(id) {
+                alert(id);
+            },
+            defaultRoute : function(actions){
+                alert(actions);
+            },
+            downloadFile: function( path ){
+                alert(path);
+            },
+            loadView: function( route, action ){
+                alert(route + "_" + action);
+            }
+        });
+
+        var app_router = new AppRouter;
+
+        Backbone.history.start();
+    });
+</script>
+</body>
+</html>

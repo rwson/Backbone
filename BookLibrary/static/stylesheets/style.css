@@ -2,6 +2,11 @@ body {
     background: #eee;
 }
 
+a,a:visited,a:active,a:hover{
+    color: #000;
+    text-decoration: none;
+}
+
 .bookContainer {
     outline: 1px solid #aaa;
     width: 350px;
@@ -16,6 +21,7 @@ body {
     float: left;
     margin: 10px;
     width: 73px;
+    height: 100px;
 }
 
 .bookContainer ul{

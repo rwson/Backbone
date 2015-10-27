@@ -12,8 +12,7 @@ app.LibraryView = Backbone.View.extend({
     "el": "#books",
 
     "events": {
-        "click #add": "addBook",
-        "change #coverImage": "upload"
+        "click #add": "addBook"
     },
 
     "initialize": function () {
@@ -73,6 +72,7 @@ app.LibraryView = Backbone.View.extend({
                         }
                     });
                     formData["coverImage"] = data["url"];
+                    formData["bookId"] = _randomId();
                     _this.collection.create(formData);
                 } else {
                     alert("图片上传失败");
@@ -85,3 +85,16 @@ app.LibraryView = Backbone.View.extend({
     }
 
 });
+
+/**
+ * 生成随机id,存储书籍
+ * @returns {string}
+ * @private
+ */
+function _randomId() {
+    var S4 = function () {
+        return Math.floor(Math.random() *  0x10000).toString(16);
+    };
+
+    return [S4(),S4(),S4(),S4(),S4(),S4(),S4(),S4()].join("");
+}

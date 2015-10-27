@@ -7,7 +7,6 @@ var http = require("http");
 var path = require("path");
 var mongoose = require("mongoose");
 var fs = require("fs");
-var templateUrl = "";
 var multipart = require("connect-multiparty");
 var formidable = require("formidable");
 
@@ -19,8 +18,9 @@ var keywords = new mongoose.Schema({
 var Book = new mongoose.Schema({
     "title": String,
     "author": String,
-    "coverImage":String,
+    "coverImage": String,
     "releaseDate": Date,
+    "bookId": String,
     "keywords": [keywords]
 });
 
@@ -69,21 +69,29 @@ app.post("/upload", function (req, res) {
                 extName = "png";
                 break;
             default :
-                res.send(400,{
-                    "code":400,
-                    "msg":"上传失败!请检查文件类型!"
+                res.send(400, {
+                    "code": 400,
+                    "msg": "上传失败!请检查文件类型!"
                 });
                 return;
         }
         targetPath = "static/upload/" + Date.now() + "." + extName;
-        fs.renameSync(files["files"]["path"], targetPath);
-        res.send(200,{
+        try {
+            fs.renameSync(files["files"]["path"], targetPath);
+        } catch (e) {
+            var inputStream = fs.createReadStream(files["files"]["path"]),
+                outputStream = fs.createWriteStream(targetPath);
+            inputStream.pipe(outputStream);
+            inputStream.on("end", function () {
+                fs.unlink(files["files"]["path"]);
+            });
+        }
+        res.send(200, {
             "code": 200,
-            "url":targetPath.replace(/^static\//i,"")
+            "url": targetPath.replace(/^static\//i, "")
         });
     });
 });
-
 
 /**
  * 获取图书列表
@@ -107,7 +115,8 @@ app.post("/api/books", function (req, res) {
         "author": req.body.author,
         "releaseDate": req.body.releaseDate,
         "keywords": req.body.keywords,
-        "coverImage":req.body.coverImage
+        "coverImage": req.body.coverImage,
+        "bookId": req.body.bookId
     });
     book.save(function (err) {
         err && function () {
@@ -131,9 +140,19 @@ app.put("/api/books/:id", function (req, res) {
             err && function () {
                 return console.log(err)
             }();
-            console.log("success");
             res.send(book);
         });
+    });
+});
+
+app.get("/book/:bookId",function(req,res){
+    BookModel.find({
+        "bookId":req.params.bookId
+    },function(err,book){
+        err && function () {
+            return console.log(err)
+        }();
+        res.send(200,book);
     });
 });
 
