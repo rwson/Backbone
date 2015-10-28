@@ -9,6 +9,8 @@ var mongoose = require("mongoose");
 var fs = require("fs");
 var multipart = require("connect-multiparty");
 var formidable = require("formidable");
+var accessLog = fs.createWriteStream('access.log',{'flags':'a'});
+var errorLog = fs.createWriteStream('error.log',{'flags':'a'});
 
 mongoose.connect("mongodb://localhost:27017/bookLibrary");
 
@@ -37,7 +39,12 @@ app.configure(function () {
     app.use(express.methodOverride());
     app.use(app.router);
     app.use(express.static(path.join(__dirname, "static")));
-
+    app.use(express.logger({"stream":accessLog}));
+    app.use(function(err,req,res,next){
+        var meta = '[' + new Date() + ']' + req.url + '\n';
+        errorLog.write(meta + err.static + '\n');
+        next();
+    });
     if ("development" == app.get("env")) {
         app.use(express.errorHandler({"dumpExceptions": true, "showStack": true}));
     }
@@ -48,7 +55,9 @@ app.configure(function () {
  */
 app.post("/upload", function (req, res) {
     var form = new formidable.IncomingForm(),
+        path = "static/upload/",
         extName = "",
+        filePath = "",
         targetPath = "";
     form.encoding = "utf-8";
     form.keepExtensions = true;
@@ -75,15 +84,20 @@ app.post("/upload", function (req, res) {
                 });
                 return;
         }
-        targetPath = "static/upload/" + Date.now() + "." + extName;
+        if(!fs.existsSync(path)){
+            fs.mkdirSync(path);
+        }
+        //  目录不存在,手动创建上传目录
+        filePath = files["files"]["path"];
+        targetPath = path + Date.now() + "." + extName;
         try {
-            fs.renameSync(files["files"]["path"], targetPath);
+            fs.renameSync(filePath, targetPath);
         } catch (e) {
-            var inputStream = fs.createReadStream(files["files"]["path"]),
+            var inputStream = fs.createReadStream(filePath),
                 outputStream = fs.createWriteStream(targetPath);
             inputStream.pipe(outputStream);
             inputStream.on("end", function () {
-                fs.unlink(files["files"]["path"]);
+                fs.unlink(filePath);
             });
         }
         res.send(200, {
@@ -103,6 +117,20 @@ app.get("/api/books", function (req, res) {
         }();
         console.log("success");
         res.send(books);
+    });
+});
+
+/**
+ * 获取书的详情
+ */
+app.get("/api/book/:bookId",function(req,res){
+    BookModel.find({
+        "bookId":req.params.bookId
+    },function(err,book){
+        err && function () {
+            return console.log(err)
+        }();
+        res.send(200,book);
     });
 });
 
@@ -142,17 +170,6 @@ app.put("/api/books/:id", function (req, res) {
             }();
             res.send(book);
         });
-    });
-});
-
-app.get("/book/:bookId",function(req,res){
-    BookModel.find({
-        "bookId":req.params.bookId
-    },function(err,book){
-        err && function () {
-            return console.log(err)
-        }();
-        res.send(200,book);
     });
 });
 

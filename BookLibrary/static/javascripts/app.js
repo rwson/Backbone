@@ -14,13 +14,14 @@ $(function () {
             "book/:id": "getBook"
         },
         "main":function(){
+            //  首页路由
             $("#releaseDate").datepicker();
             new app.LibraryView();
 
         },
         "getBook": function (id) {
-            console.log(app);
-            new app.DetailView();
+            //  图书详情页
+            new app.BookDetailView(id);
         }
     });
 

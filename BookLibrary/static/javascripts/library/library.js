@@ -1,3 +1,7 @@
+/**
+ * library.js
+ * 图书库
+ */
 //  每本书的模型
 var app = app || {};
 
@@ -101,24 +105,13 @@ app.LibraryView = Backbone.View.extend({
                     formData["bookId"] = _randomId();
                     _this.collection.create(formData);
                 } else {
-                    alert("图片上传失败");
+                    alert("上传失败,请重试！");
                 }
             },
             error: function(){
                 alert("上传失败,请重试！");
             }
         });
-    }
-});
-
-//  图书详情
-app.DetailView = Backbone.View.extend({
-    "otherEl": "#books",
-    "events": {
-        "click #add": "addBook"
-    },
-    "initialize": function () {
-        $(this.otherEl).hide();
     }
 });
 
