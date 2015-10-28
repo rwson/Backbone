@@ -27,9 +27,10 @@
         </div>
     </div>
 </div>
+<div id="book-detail"></div>
 
 <script id="bookTemplate" type="text/template">
-    <a href="/#/book/<%= bookId %>">
+    <a href="#/book/<%= bookId %>">
         <img src="<%= coverImage %>">
         <ul>
             <li><%= title %></li>
@@ -40,6 +41,16 @@
     </a>
     <button class="delete">Delete</button>
 </script>
+<script id="bookDetailTemplate" type="text/template">
+    <img src="<%= coverImage %>">
+    <ul>
+        <li><%= title %></li>
+        <li><%= author %></li>
+        <li><%= $.format.date(new Date(releaseDate),"MMMM yyyy") %></li>
+        <li><% _.each(keywords,function(keyobj){ %><%= keyobj.keyword %> <% }); %></li>
+    </ul>
+    <button class="delete">Delete</button>
+</script>
 
 <script src="javascripts/libs/jquery-1.7.2.min.js"></script>
 <script src="javascripts/libs/ajaxfileupload.js"></script>
@@ -47,10 +58,7 @@
 <script src="jquery-ui/jquery-ui.min.js"></script>
 <script src="javascripts/libs/underscore-min.js"></script>
 <script src="javascripts/libs/backbone-min.js"></script>
-<script src="javascripts/models/book.js"></script>
-<script src="javascripts/collections/library.js"></script>
-<script src="javascripts/views/book.js"></script>
-<script src="javascripts/views/library.js"></script>
+<script src="javascripts/books/library.js"></script>
 <script src="javascripts/app.js"></script>
 </body>
 </html>

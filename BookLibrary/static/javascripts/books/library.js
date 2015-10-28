@@ -7,13 +7,13 @@ app.Book = Backbone.Model.extend({
         "title":"No title",
         "author":"Unknown",
         "releaseDate":"Unknown",
-        "keywords":"None"
+        "keywords":"None",
+        "bookId":"id"
     },
     "parse":function(res){
         res.id = res._id;
         return res;
     }
-
 });
 
 //  所有书的集合
@@ -108,6 +108,17 @@ app.LibraryView = Backbone.View.extend({
                 alert("上传失败,请重试！");
             }
         });
+    }
+});
+
+//  图书详情
+app.DetailView = Backbone.View.extend({
+    "otherEl": "#books",
+    "events": {
+        "click #add": "addBook"
+    },
+    "initialize": function () {
+        $(this.otherEl).hide();
     }
 });
 
