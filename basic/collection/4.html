@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<script src="../../libs/jquery-1.7.2.min.js"></script>
+<script src="../../libs/underscore-min.js"></script>
+<script src="../../libs/v1.1.0/backbone.js"></script>
+<script>
+    (function ($) {
+
+        /**
+         * 发送数据到服务端
+         */
+        var Book = Backbone.Model.extend({
+            "defaults": {
+                "title": "default"
+            },
+            "initialize": function () {
+            }
+        });
+
+        var BookShelf = Backbone.Collection.extend({
+            "model": Book,
+            "url": "2.json"
+        });
+
+        var bookShelf = new BookShelf;
+
+        bookShelf.create({
+            "title":"小宋是帅比"
+        });
+
+    })(jQuery);
+</script>
+</body>
+</html>

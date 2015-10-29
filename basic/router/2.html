@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<a href="#/test">test</a><br/>
+<a href="#/post/fuck">post fuck</a><br/>
+<a href="#/download/hehe">post hehe</a><br/>
+<a href="#/dashboard/graph">loadView</a>
+<script src="../../libs/jquery-1.7.2.min.js"></script>
+<script src="../../libs/underscore-min.js"></script>
+<script src="../../libs/v1.1.0/backbone.js"></script>
+<script>
+    (function($){
+
+        /**
+         * Backbone中的Router:路由传参
+         */
+        var AppRouter = Backbone.Router.extend({
+            "routes":{
+                "/post/:id":"getPost",
+                "/download/:path":"getPath",
+                "/:route/:action":"loadView",
+                "*actions":"defaultRoute"
+            },
+            "defaultRoute":function(action){
+                action != null && alert(action);
+            },
+            "getPost":function(id){
+                alert(id);
+            },
+            "getPath":function(path){
+                alert(path);
+            },
+            "loadView":function(route,action){
+                alert(route + "-" + action);
+            }
+        });
+
+        var appRouter = new AppRouter;
+        Backbone.history.start();
+        //  调用Backbone.history.start()来初始化路由
+
+    })(jQuery);
+</script>
+</body>
+</html>

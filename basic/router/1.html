@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<a href="#test">test</a><br/>
+<a href="#fuck">fuck</a><br/>
+<a href="#hehe">hehe</a><br/>
+<a href="#actions">actions</a>
+<script src="../../libs/jquery-1.7.2.min.js"></script>
+<script src="../../libs/underscore-min.js"></script>
+<script src="../../libs/v1.1.0/backbone.js"></script>
+<script>
+    (function($){
+
+        /**
+         * Backbone中的Router:路由
+         * Model和Collection属于Backbone中的静态数据
+         * Router属于动态部分
+         * 在SPA中,所有的操作内容都要在同一个页面展示,这样一来总不能都用事件监听来完成
+         * 所以就有了Router,通过指定url的hash来完成
+         */
+        var AppRouter = Backbone.Router.extend({
+            "routes":{
+                "*actions":"defaultRoute"
+            },
+            "defaultRoute":function(action){
+                action != null && alert(action);
+            }
+        });
+
+        var appRouter = new AppRouter;
+        Backbone.history.start();
+        //  调用Backbone.history.start()来初始化路由
+
+    })(jQuery);
+</script>
+</body>
+</html>
