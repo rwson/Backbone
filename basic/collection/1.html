@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<script src="../../libs/jquery-1.7.2.min.js"></script>
+<script src="../../libs/underscore-min.js"></script>
+<script src="../../libs/v1.1.0/backbone.js"></script>
+<script>
+    (function ($) {
+
+        /**
+         * collection是model对象的有序集合
+         */
+        var Book = Backbone.Model.extend({
+            "defaults": {
+                "title": "default"
+            },
+            "initialize": function () {
+            }
+        });
+
+        var BookShelf = Backbone.Collection.extend({
+            "model": Book
+        });
+
+        var book1 = new Book({
+            "title": "Book1"
+        });
+        var book2 = new Book({
+            "title": "Book2"
+        });
+        var book3 = new Book({
+            "title": "Book3"
+        });
+        var book4 = new Book({
+            "title":"Book4"
+        });
+
+        var bookShelf = new BookShelf([book1, book2, book3]);
+        //  这里的bookShelf是数组,也可以用add方法来追加元素
+
+        bookShelf.add(book4);
+
+        bookShelf.each(function(book){
+            alert(book.get("title"));
+        });
+        //  underscore中的each方法
+
+    })(jQuery);
+</script>
+</body>
+</html>

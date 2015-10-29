@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<script src="../../libs/jquery-1.7.2.min.js"></script>
+<script src="../../libs/underscore-min.js"></script>
+<script src="../../libs/v1.1.0/backbone.js"></script>
+<script>
+    (function ($) {
+
+        /**
+         * reset方法
+         * 使用该方法要和fetch配合使用,在fetch到数据时,默认会调用set方法,set会向collection中添加新的model,如果该model之前就存在会进行合并,同时触发add方法
+         * 可以指定reset:true来调用reset方法,reset会清空collection重新添加新的model,在collection中定义或者绑定reset方法
+         */
+        var Book = Backbone.Model.extend({
+            "defaults": {
+                "title": "default"
+            },
+            "initialize": function () {
+            }
+        });
+
+    })(jQuery);
+</script>
+</body>
+</html>

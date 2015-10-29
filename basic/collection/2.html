@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<script src="../../libs/jquery-1.7.2.min.js"></script>
+<script src="../../libs/underscore-min.js"></script>
+<script src="../../libs/v1.1.0/backbone.js"></script>
+<script>
+    (function ($) {
+
+        /**
+         * 使用fetch从服务端获取数据
+         * collection中没有urlRoot参数
+         */
+        var Book = Backbone.Model.extend({
+            "defaults": {
+                "title": "default"
+            },
+            "initialize": function () {
+            }
+        });
+
+        var BookShelf = Backbone.Collection.extend({
+            "model": Book,
+            "url": "2.json"
+            //  这边的url属性也可以不指定,直接通过实例来指定(ex:bookShelf.url = "2.json";)
+        });
+
+        var bookShelf = new BookShelf;
+
+        bookShelf.fetch({
+            "success": function (collection, res, opt) {
+                collection.each(function (book) {
+                    alert(book.get("title"));
+                });
+            },
+            "error": function (collection, res, opt) {
+                alert("请求失败!");
+            }
+        });
+
+    })(jQuery);
+</script>
+</body>
+</html>
