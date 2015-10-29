@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<script src="../../libs/jquery-1.7.2.min.js"></script>
+<script src="../../libs/underscore-min.js"></script>
+<script src="../../libs/v1.1.0/backbone.js"></script>
+<script>
+    (function ($) {
+
+        /**
+         * 对象属性的赋值和获取
+         */
+        var Man = Backbone.Model.extend({
+            "defaults": {
+                "name":"小宋",
+                "age":23
+            },
+            "initialize": function () {
+                console.log("Hello，Backbone's Model！");
+            }
+        });
+        var man = new Man;
+        console.log(man.get("name"));
+        //  直接定义,设置默认值,通过defaults属性
+
+        var Man1 = Backbone.Model.extend({
+            "initialize": function () {
+                console.log("Hello，Backbone's Model！2");
+            }
+        });
+        var man1 = new Man1;
+        man1.set({
+            "name":"小宋2",
+            "age":23
+        });
+        console.log(man1.get("name"));
+        //  通过实例调用set方法来设置
+
+        var Man2 = Backbone.Model.extend({
+            "initialize": function () {
+                console.log("Hello，Backbone's Model！2");
+            }
+        });
+        var man2 = new Man2({
+            "name":"小宋3",
+            "age":23
+        });
+        console.log(man2.get("name"));
+        //  实例化的时候直接指定
+
+        //  通过get方法来获取属性值
+
+    })(jQuery);
+</script>
+</body>
+</html>

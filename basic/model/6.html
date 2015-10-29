@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<script src="../../libs/jquery-1.7.2.min.js"></script>
+<script src="../../libs/underscore-min.js"></script>
+<script src="../../libs/v1.1.0/backbone.js"></script>
+<script>
+    (function ($) {
+
+        /**
+         * 和服务端交互
+         *
+         */
+        var Man = Backbone.Model.extend({
+            "url":"6.json",
+            "defaults": {
+                "name":"小宋",
+                "age":23
+            },
+            "initialize": function () {
+                console.log("Hello，Backbone's Model！");
+                this.bind("change:name",function(){
+                    console.log("name属性变为" + this.get("name"));
+                });
+                //  监听name属性变化
+
+                this.bind("error",function(model,err){
+                    console.log(err);
+                });
+                //  绑定invalid方法
+
+            },
+            "aboutMe":function(){
+                return "我叫" + this.get("name") + ",今年" + this.get("age") + "岁";
+            },
+            "validate":function(attr){
+                if(!attr.name){
+                    return "name属性不能为空!";
+                }
+            }
+        });
+        var man = new Man;
+        man.set({
+            "name":"小宋是帅比"
+        });
+        man.save();
+        //  保存数据,发送POST请求到服务端,数据为{"name":"小宋是帅比","age":23}
+
+        /**
+         * 直接调用fetch:会发送GET请求到服务端,请求路径就是model指定的url
+         * 调用fetch时指定参数
+         */
+        man.fetch();
+        //  获取数据,发送GET请求到服务端
+
+        man.fetch({
+            "url":"http://localhost:8081/Backbone/basic/model/6.json"
+        });
+        //  指定url的fetch
+
+        man.fetch({
+            "url":"http://localhost:8081/Backbone/basic/model/6.json",
+            "success":function(model,res){
+                //  当fetch成功时候触发
+                alert("fetch success");
+                alert(model.get("name"));
+            },
+            "error":function(){
+                //  当数据格式错误等错误时触发
+                alert("fetch error");
+            }
+        });
+
+        /**
+         * url和urlRoot
+         * 如果只单纯的设置了url,对后端数据库的CURD都会发送请求到这个url上,这样如果发送put或者delete类型的请求时,没有带去相应的数据,后端不知道我们具体要操作哪一条数据
+         * 所以就有了urlRoot,设置了urlRoot,put或者delete类型的请求,就会自动带上相应的参数,比如urlRoot为base,请求地址就是base/:id这种类型,这样才能正确操作服务端数据
+         */
+
+    })(jQuery);
+</script>
+</body>
+</html>

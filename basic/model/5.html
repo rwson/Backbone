@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<script src="../../libs/jquery-1.7.2.min.js"></script>
+<script src="../../libs/underscore-min.js"></script>
+<script src="../../libs/v1.1.0/backbone.js"></script>
+<script>
+    (function ($) {
+
+        /**
+         * 为对象添加验证规则,并且给出错误提示
+         */
+        var Man = Backbone.Model.extend({
+            "defaults": {
+                "name":"小宋",
+                "age":23
+            },
+            "initialize": function () {
+                console.log("Hello，Backbone's Model！");
+                this.bind("change:name",function(){
+                    console.log("name属性变为" + this.get("name"));
+                });
+                //  监听name属性变化
+
+                this.bind("invalid",function(model,err){
+                    console.log(err);
+                });
+                //  绑定invalid方法
+            },
+            "validate":function(attr){
+                if(!attr.name){
+                    return "name属性不能为空!";
+                }
+            }
+        });
+        var man = new Man;
+        setTimeout(function(){
+            man.set({
+                "name":""
+            });
+            man.save();
+        },5000);
+
+        var Man2 = Backbone.Model.extend({
+            "defaults": {
+                "name":"小宋",
+                "age":23
+            },
+            "initialize": function () {
+                console.log("Hello，Backbone's Model！");
+                this.bind("change:name",function(){
+                    console.log("name属性变为" + this.get("name"));
+                });
+                //  监听name属性变化
+            },
+            "validate":function(attr){
+                if(!attr.name){
+                    return "name属性不能为空!";
+                }
+            }
+        });
+        var man2 = new Man2;
+        man2.bind("invalid",function(model,err){
+            alert(err);
+        });
+        //  绑定invalid方法
+        setTimeout(function(){
+//            man2.set({
+//                "name":""
+//            });
+//            man2.save();
+            //  默认set时不进行验证,需要手动调用
+
+            man2.set({
+                "name":""
+            },{
+                "validate":true
+            });
+            //  set时指定validate为true,就触发相应的验证
+        },5000);
+
+    })(jQuery);
+</script>
+</body>
+</html>

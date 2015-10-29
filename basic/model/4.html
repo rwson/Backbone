@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<script src="../../libs/jquery-1.7.2.min.js"></script>
+<script src="../../libs/underscore-min.js"></script>
+<script src="../../libs/v1.1.0/backbone.js"></script>
+<script>
+    (function ($) {
+
+        /**
+         * 监听属性值的变化
+         */
+        var Man = Backbone.Model.extend({
+            "defaults": {
+                "name":"小宋",
+                "age":23
+            },
+            "initialize": function () {
+                console.log("Hello，Backbone's Model！");
+                this.bind("change:name",function(){
+                    console.log("name属性变为" + this.get("name"));
+                });
+                //  监听name属性变化
+            }
+        });
+        var man = new Man;
+        setTimeout(function(){
+            man.set({
+                "name":"小宋是帅比!"
+            });
+        },5000);
+
+    })(jQuery);
+</script>
+</body>
+</html>

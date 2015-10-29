@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<script src="../../libs/jquery-1.7.2.min.js"></script>
+<script src="../../libs/underscore-min.js"></script>
+<script src="../../libs/v1.1.0/backbone.js"></script>
+<script>
+    (function ($) {
+
+        /**
+         * 对象下的方法
+         */
+        var Man = Backbone.Model.extend({
+            "defaults": {
+                "name":"小宋",
+                "age":23
+            },
+            "initialize": function () {
+                console.log("Hello，Backbone's Model！");
+            },
+            "aboutMe":function(){
+                return "我叫" + this.get("name") + ",今年" + this.get("age") + "岁";
+            }
+        });
+        var man = new Man;
+        alert(man.aboutMe());
+
+    })(jQuery);
+</script>
+</body>
+</html>

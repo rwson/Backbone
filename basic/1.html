@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<button id="check">我是新手,多多关照</button>
+<ul id="worlds-list"></ul>
+<script src="../libs/jquery-1.7.2.min.js"></script>
+<script src="../libs/underscore-min.js"></script>
+<script src="../libs/v1.1.0/backbone.js"></script>
+<script>
+    (function($){
+        var World = Backbone.Model.extend({
+            //  创建一个具有name属性的world对象
+            "name":null
+        });
+
+        var Worlds = Backbone.Collection.extend({
+            //  world对象的集合
+            "initialize":function(models,options){
+                //  构造函数,实例化一个world集合类,并且以字典的形式传入AppView对象
+                this.bind("add",options.view.addOneWorld);
+            }
+        });
+
+        var AppView = Backbone.View.extend({
+            "el":$("body"),
+            "initialize":function(){
+                this.worlds = new Worlds(null,{
+                    "view":this
+                });
+            },
+            "events":{
+                "click #check":"checkIn"
+                //  事件绑定,给一个id为check的元素绑定click事件
+            },
+            "checkIn":function(){
+                var name = "不知道";
+                var worldName = prompt("你来自哪个星球?");
+                if(worldName){
+                    name = worldName;
+                }
+                var world = new World({
+                    "name":name
+                });
+                this.worlds.add(world);
+            },
+            "addOneWorld":function(model){
+                $("#worlds-list").append("<li>这是来自" + model.get("name") + "的问候!</li>");
+            }
+        });
+
+        var appView = new AppView;
+        //  实例化AppView
+
+        /**
+         * 实现逻辑:
+         * ->监听collection的add事件
+         * ->给#check绑定chick事件
+         * ->点击#check,新建一个world实例并add到collection中
+         * ->触发add事件,向DOM中写元素
+         */
+    })(jQuery);
+</script>
+</body>
+</html>
