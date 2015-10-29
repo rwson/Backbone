@@ -13,7 +13,10 @@
 
         /**
          * 和服务端交互
-         *
+         * Backbone中所有的服务端交互都是通过Backbone.sync这个方法来完成,调用方法的时候会自动传入一个参数,根据参数来发送对应的请求
+         * save -> 是否新对象:是(参数为create),否(参数为update)
+         * fetch -> read
+         * destory -> delete
          */
         var Man = Backbone.Model.extend({
             "url":"6.json",
