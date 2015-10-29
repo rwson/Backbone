@@ -24,6 +24,35 @@
             }
         });
 
+        var BookShelf = Backbone.Collection.extend({
+            "model": Book,
+            "url": "2.json",
+            //  这边的url属性也可以不指定,直接通过实例来指定(ex:bookShelf.url = "2.json";)
+            "initialize":function(){
+                this.bind("reset",_showAllBooks(this));
+            }
+        });
+
+        var bookShelf = new BookShelf;
+
+        bookShelf.fetch({
+            "reset":true,
+            "success": function (collection, res, opt) {
+//                collection.each(function (book) {
+//                    alert(book.get("title"));
+//                });
+            },
+            "error": function (collection, res, opt) {
+                alert("请求失败!");
+            }
+        });
+
+        function _showAllBooks(books){
+            books.each(function(book){
+                document.writeln(book.get("title"));
+            });
+        }
+
     })(jQuery);
 </script>
 </body>
