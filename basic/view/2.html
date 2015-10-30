@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div id="search-container"></div>
+<script id="search-template" type="text/template">
+    <div>
+        <%= searchLabel %>
+    </div>
+</script>
+<script src="../../libs/jquery-1.7.2.min.js"></script>
+<script src="../../libs/underscore-min.js"></script>
+<script src="../../libs/v1.1.0/backbone.js"></script>
+<script>
+    (function ($) {
+
+        var SearchView = Backbone.View.extend({
+            "el": "#search-container",
+            "initialize": function () {
+            },
+            "render": function (context) {
+                var template = _.template($("#search-template").html());
+                $(this.el).html(template(context));
+            }
+        });
+
+        var searchView = new SearchView({
+            "el": "#search-container"
+        });
+        searchView.render({
+            "searchLabel":"搜索渲染,么么哒！"
+        });
+
+    })(jQuery);
+</script>
+</body>
+</html>

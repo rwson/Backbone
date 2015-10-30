@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<script src="../../libs/jquery-1.7.2.min.js"></script>
+<script src="../../libs/underscore-min.js"></script>
+<script src="../../libs/v1.1.0/backbone.js"></script>
+<script>
+    (function($){
+
+        /**
+         * View视图:显示model中的数据到页面上,也可以给相应的DOM绑定事件
+         */
+        var SearchView = Backbone.View.extend({
+            "initialize":function(){
+                alert("view初始化完成");
+            }
+        });
+
+        var searchView = new SearchView();
+
+    })(jQuery);
+</script>
+</body>
+</html>

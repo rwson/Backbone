@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div id="search-area">
+    <div id="search-container"></div>
+    <script id="search-template" type="text/template">
+        <ul>
+            <% _.each(labels,function(name){ %>
+                <% if(name != "label2"){ %>
+                    <li><%= name %></li>
+                <% }  %>
+            <% }) %>
+        </ul>
+    </script>
+</div>
+<script src="../../libs/jquery-1.7.2.min.js"></script>
+<script src="../../libs/underscore-min.js"></script>
+<script src="../../libs/v1.1.0/backbone.js"></script>
+<script>
+    (function ($) {
+
+        /**
+         * View中的模板
+         */
+        var SearchView = Backbone.View.extend({
+            "el": "#search-area",
+            "initialize": function () {
+                var labels = ["label1","label2","label3"];
+                this.render({
+                    "labels":labels
+                });
+            },
+            "render": function (context) {
+                var template = _.template($("#search-template").html());
+                $(this.el).find("#search-container").html(template(context));
+            }
+        });
+
+        var searchView = new SearchView();
+
+    })(jQuery);
+</script>
+</body>
+</html>
