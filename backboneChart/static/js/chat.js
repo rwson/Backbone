@@ -66,6 +66,7 @@ var AppView = Backbone.View.extend({
     "topic_list": $("#topic_list"),
     "topic_section": $("#topic_section"),
     "message_list": $("#message_list"),
+    "message_section": $("#message_section"),
     "message_head": $("#message_head"),
     "events": {
         "click .submit": "saveMessage",
@@ -137,6 +138,107 @@ var AppView = Backbone.View.extend({
         var self = this;
         topic.save(null,{
             "success":function(model,res,opt){}
+        });
+    },
+    "showTopic":function(){
+        Topics.fetch();
+        this.topic_section.show();
+        this.message_section.hide();
+        this.message_list.html("");
+    },
+    "initMessage":function(topic_id){
+        var messages = new Messages();
+        messages.bind("add",this.addMessage);
+        this.message_pool[topic_id] = messages;
+    },
+    "showMessage":function(topic_id){
+        this.initMessage(topic_id);
+        this.message_section.show();
+        this.topic_section.show();
+        this.showMessageHead(topic_id);
+        var messages = this.message_pool[topic_id];
+        var self = this;
+        messages.fetch({
+            "data":{
+                "topic_id":topic_id
+            },
+            "success":function(res){
+                self.message_list.scrollTop(self.message_list_div.scrollHeight);
+            }
+        });
+    },
+    "showMessageHead":function(topic_id){
+        var topic = new Topic({
+            "id":topic_id
+        });
+        var self = this;
+        topic.fetch({
+            "success":function(res,model,opt){
+                self.message_head.html(model.title);
+            }
+        });
+    }
+});
+
+//  登录视图,展示登录注册
+var LoginView = Backbone.View.extend({
+    "el":"#login",
+    "wrapper":$("#wrapper"),
+    "events":{
+        "keypress #login_pwd":"loginEvent",
+        "click .login_submit":"login",
+        "click #reg_pwd_repeat":"registeEvent",
+        "click .registe_submit":"registe"
+    },
+    "hide":function(){
+        this.wrapper.hide();
+    },
+    "show":function(){
+        this.wrapper.show();
+    },
+    "loginEvent":function(ev){
+        if(ev.keyCode == 13){
+            this.login(ev);
+        }
+    },
+    "login":function(ev){
+        var username_input = $("#login_username");
+        var pwd_input = $("#login_pwd");
+        var user = new User({
+            "username":username_input.val(),
+            "password":pwd_input.val()
+        });
+        user.save(null,{
+            "url":"/login",
+            "success":function(model,res,opt){
+                g_user = res;
+                appRouter.navigate("index",{
+                    "trigger":true
+                });
+            }
+        });
+    },
+    "registeEvent":function(ev){
+        if(ev.keyCode == 13){
+            this.registe(ev);
+        }
+    },
+    "registe":function(ev){
+        var reg_username_input = $("#reg_username");
+        var reg_pwd_input = $("#reg_pwd");
+        var reg_pwd_repeat = $("#reg_pwd_repeat");
+        var user = new User({
+            "username":reg_username_input.val(),
+            "password":reg_pwd_input.val(),
+            "password_repeat":reg_pwd_repeat.val()
+        });
+        user.save(null,{
+            "success":function(model,res,opt){
+                g_user = res;
+                appRouter.navigate("index",{
+                    "trigger":true
+                });
+            }
         });
     }
 });
