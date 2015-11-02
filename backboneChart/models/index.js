@@ -7,12 +7,12 @@ var exportObj = {
         "id": String,
         "username": String,
         "password": String,
-        "register_time": Date
+        "register_time": Object
     }),
     "Topic": new mongoose.Schema({
         "id": String,
         "title": String,
-        "create_time": Date,
+        "create_time": Object,
         "owner": String
     }),
     "Message": new mongoose.Schema({
@@ -20,7 +20,7 @@ var exportObj = {
         "content": String,
         "top_id": String,
         "user_id": String,
-        "create_time": Date
+        "create_time": Object
     })
 };
 

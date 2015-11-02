@@ -3,7 +3,8 @@
  */
 
 var Models = require("../models").Models;
-var crypto = require('crypto');
+var Util = require("../Util");
+var socket = require('../socket');
 
 module.exports = function (app) {
 
@@ -12,10 +13,10 @@ module.exports = function (app) {
      */
     app.post("/user", function (req, res) {
         var User = new Models.User({
-            "id": _randomId(),
+            "id": Util.randomId(),
             "username": req.body.username,
-            "password": _encryptString(req.body.password),
-            "register_time": Date.now()
+            "password": Util.encryptString(req.body.password),
+            "register_time": Util.getTime()
         });
         Models.User.find({
             "username": req.body.username
@@ -44,6 +45,13 @@ module.exports = function (app) {
      * 获取用户列表
      */
     app.get("/user", function (req, res) {
+        if (req.session.user) {
+            return res.send(200, {
+                "code": 200,
+                "user": req.session.user
+            });
+        }
+        //  如果已经有用户登录的情况
         Models.User.find(function (err, users) {
             if (err) {
                 return res.send(500, err);
@@ -63,7 +71,6 @@ module.exports = function (app) {
             "id": req.body.id
         }, function (err, user) {
             if (err) {
-                console.log(err);
                 return res.send(500, err);
             }
         });
@@ -74,7 +81,7 @@ module.exports = function (app) {
      */
     app.post("/login", function (req, res) {
         Models.User.find({
-            "password": _encryptString(req.body.password)
+            "password": Util.encryptString(req.body.password)
         }, function (err, user) {
             if (err) {
                 console.log(err);
@@ -99,8 +106,8 @@ module.exports = function (app) {
      */
     app.get("/logout", function (req, res) {
         req.session.user = null;
-        res.send(200,{
-            "message":"登出成功!"
+        res.send(200, {
+            "message": "登出成功!"
         });
     });
 
@@ -113,9 +120,7 @@ module.exports = function (app) {
                 console.log(err);
                 return res.send(500, err);
             }
-            res.send(200, {
-                "topics": topics
-            });
+            res.send(topics);
         });
     });
 
@@ -125,29 +130,29 @@ module.exports = function (app) {
     app.post("/topic", function (req, res) {
         console.log(req.session);
         var Topic = new Models.Topic({
-            "id": _randomId(),
+            "id": Util.randomId(),
             "title": req.body.title,
-            "create_time": Date.now(),
+            "create_time": Util.getTime(),
             "owner": req.session.user["id"]
         });
         Models.Topic.find({
             "title": req.body.title
         }, function (err, topic) {
             if (err) {
-                console.log(err);
                 res.send(500, err);
             } else if (topic.length) {
                 res.send(400, {
-                    "message":"该话题已存在!"
+                    "message": "该话题已存在!"
                 });
-            }else{
-                Topic.save(function(err,topic){
-                    if(err){
+            } else {
+                Topic.save(function (err, topic) {
+                    if (err) {
                         console.log(err);
-                        res.send(200,{
-                            "message":"话题创建成功!"
-                        });
+                        return res.send(500, err);
                     }
+                    res.send(200, {
+                        "message": "话题创建成功!"
+                    });
                 });
             }
         });
@@ -157,6 +162,8 @@ module.exports = function (app) {
      * 查看具体话题
      */
     app.get("/topic/:id", function (req, res) {
+        Models.Topic.findById(req.params.id, function (err, topic) {
+        });
     });
 
     /**
@@ -182,27 +189,3 @@ module.exports = function (app) {
     });
 
 };
-
-/**
- * 生成随机id,当各种id
- * @returns {string}
- * @private
- */
-function _randomId() {
-    var S4 = function () {
-        return Math.floor(Math.random() * 0x10000).toString(16);
-    };
-    return [S4(), S4(), S4(), S4(), S4(), S4(), S4(), S4()].join("");
-}
-
-/**
- * 加密字符串
- * @param str   被加密的字符串
- * @return {string}
- * @private
- */
-function _encryptString(str) {
-    var sha1 = crypto.createHash("sha1");
-    sha1.update("" + str);
-    return sha1.digest("hex");
-}
