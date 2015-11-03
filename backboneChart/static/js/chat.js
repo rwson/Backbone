@@ -2,6 +2,9 @@
  * backbone webChat前端模块
  */
 
+var appRouter,      //  路由控制
+    g_user;         //  全局缓存用户
+
 //  用户模型
 var User = Backbone.Model.extend({
     "urlRoot": "/user"
@@ -95,25 +98,25 @@ var AppView = Backbone.View.extend({
     "saveMessage": function (ev) {
         var comment_box = $("#comment");
         var content = comment_box.val();
-        if(!content){
+        if (!content) {
             alert("内容不能为空");
             return false;
         }
         var topic_id = comment_box.attr("id");
         var message = new Message({
-            "content":content,
-            "topic_id":topic_id
+            "content": content,
+            "topic_id": topic_id
         });
         var self = this;
         var messages = this.message_pool[topic_id];
-        message.save(null,{
-            "success":function(model,res,opt){
+        message.save(null, {
+            "success": function (model, res, opt) {
                 comment_box.val("");
                 messages.fetch({
-                    "data":{
-                        "topic_id":topic_id
+                    "data": {
+                        "topic_id": topic_id
                     },
-                    "success":function(){
+                    "success": function () {
                         self.message_list.scrollTop(self.message_list_div.scrollHeight);
                         message.add(res);
                     }
@@ -126,32 +129,33 @@ var AppView = Backbone.View.extend({
             this.saveMessage(ev);
         }
     },
-    "saveTopic":function(){
+    "saveTopic": function () {
         var topic_title = $("#topic_title");
-        if(!topic_title.val()){
+        if (!topic_title.val()) {
             alert("主题不能为空");
             return false;
         }
         var topic = new Topic({
-            "title":topic_title.val()
+            "title": topic_title.val()
         });
         var self = this;
-        topic.save(null,{
-            "success":function(model,res,opt){}
+        topic.save(null, {
+            "success": function (model, res, opt) {
+            }
         });
     },
-    "showTopic":function(){
+    "showTopic": function () {
         Topics.fetch();
         this.topic_section.show();
         this.message_section.hide();
         this.message_list.html("");
     },
-    "initMessage":function(topic_id){
+    "initMessage": function (topic_id) {
         var messages = new Messages();
-        messages.bind("add",this.addMessage);
+        messages.bind("add", this.addMessage);
         this.message_pool[topic_id] = messages;
     },
-    "showMessage":function(topic_id){
+    "showMessage": function (topic_id) {
         this.initMessage(topic_id);
         this.message_section.show();
         this.topic_section.show();
@@ -159,21 +163,21 @@ var AppView = Backbone.View.extend({
         var messages = this.message_pool[topic_id];
         var self = this;
         messages.fetch({
-            "data":{
-                "topic_id":topic_id
+            "data": {
+                "topic_id": topic_id
             },
-            "success":function(res){
+            "success": function (res) {
                 self.message_list.scrollTop(self.message_list_div.scrollHeight);
             }
         });
     },
-    "showMessageHead":function(topic_id){
+    "showMessageHead": function (topic_id) {
         var topic = new Topic({
-            "id":topic_id
+            "id": topic_id
         });
         var self = this;
         topic.fetch({
-            "success":function(res,model,opt){
+            "success": function (res, model, opt) {
                 self.message_head.html(model.title);
             }
         });
@@ -182,63 +186,116 @@ var AppView = Backbone.View.extend({
 
 //  登录视图,展示登录注册
 var LoginView = Backbone.View.extend({
-    "el":"#login",
-    "wrapper":$("#wrapper"),
-    "events":{
-        "keypress #login_pwd":"loginEvent",
-        "click .login_submit":"login",
-        "click #reg_pwd_repeat":"registeEvent",
-        "click .registe_submit":"registe"
+    "el": "#login",
+    "wrapper": $("#wrapper"),
+    "events": {
+        "keypress #login_pwd": "loginEvent",
+        "click .login_submit": "login",
+        "click #reg_pwd_repeat": "registeEvent",
+        "click .registe_submit": "registe"
     },
-    "hide":function(){
+    "hide": function () {
         this.wrapper.hide();
     },
-    "show":function(){
+    "show": function () {
         this.wrapper.show();
     },
-    "loginEvent":function(ev){
-        if(ev.keyCode == 13){
+    "loginEvent": function (ev) {
+        if (ev.keyCode == 13) {
             this.login(ev);
         }
     },
-    "login":function(ev){
+    "login": function (ev) {
         var username_input = $("#login_username");
         var pwd_input = $("#login_pwd");
         var user = new User({
-            "username":username_input.val(),
-            "password":pwd_input.val()
+            "username": username_input.val(),
+            "password": pwd_input.val()
         });
-        user.save(null,{
-            "url":"/login",
-            "success":function(model,res,opt){
+        user.save(null, {
+            "url": "/login",
+            "success": function (model, res, opt) {
                 g_user = res;
-                appRouter.navigate("index",{
-                    "trigger":true
+                appRouter.navigate("index", {
+                    "trigger": true
                 });
             }
         });
     },
-    "registeEvent":function(ev){
-        if(ev.keyCode == 13){
+    "registeEvent": function (ev) {
+        if (ev.keyCode == 13) {
             this.registe(ev);
         }
     },
-    "registe":function(ev){
+    "registe": function (ev) {
         var reg_username_input = $("#reg_username");
         var reg_pwd_input = $("#reg_pwd");
         var reg_pwd_repeat = $("#reg_pwd_repeat");
         var user = new User({
-            "username":reg_username_input.val(),
-            "password":reg_pwd_input.val(),
-            "password_repeat":reg_pwd_repeat.val()
+            "username": reg_username_input.val(),
+            "password": reg_pwd_input.val(),
+            "password_repeat": reg_pwd_repeat.val()
         });
-        user.save(null,{
-            "success":function(model,res,opt){
+        user.save(null, {
+            "success": function (model, res, opt) {
                 g_user = res;
-                appRouter.navigate("index",{
-                    "trigger":true
+                AppRouter.navigate("index", {
+                    "trigger": true
                 });
             }
         });
+    }
+});
+
+//  定义路由
+var AppRoute = Backbone.Router.extend({
+    "routes": {
+        "login": "login",
+        "index": "index",
+        "topic/:id": "topic"
+    },
+    "initialize": function () {
+        this.appView = new AppView();
+        this.loginView = new LoginView();
+        this.userView = new UserView();
+        this.indexFlag = false;
+    },
+    "login": function () {
+        this.loginView.show();
+    },
+    "index": function () {
+        if (g_user && g_user.id != undefined) {
+            this.appView.showTopic();
+            this.userView.show(g_user.username);
+            this.loginView.hide();
+            this.indexFlag = true;
+        }
+    },
+    "topic": function (topic_id) {
+        if (g_user && g_user.id != undefined) {
+            this.appView.showMessage(topic_id);
+            this.userView.show();
+            this.loginView.hide();
+            this.indexFlag = true;
+        }
+    }
+});
+
+//  程序启动
+appRouter = new AppRoute();
+g_user = new User();
+g_user.fetch({
+    "success": function (model, res, opt) {
+        g_user = res;
+        Backbone.history.start();
+        if(g_user == null || g_user.id == undefined){
+            appRouter.navigate("login",{
+                "trigger":true
+            });
+        }else if(appRouter.indexFlag == false){
+            appRouter.navigate("index",{
+                "trigger":true
+            });
+        }
     }
 });
