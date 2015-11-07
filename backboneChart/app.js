@@ -7,7 +7,6 @@ var routes = require('./routes');
 var http = require('http');
 var path = require('path');
 var io = require('socket.io');
-var socket = require('./socket');
 var app = express();
 
 app.set('port', process.env.PORT || 3000);
@@ -29,10 +28,7 @@ if ('development' == app.get('env')) {
     app.use(express.errorHandler());
 }
 
-//  start socket server
-socket.startServer(io, app);
-
 //  apply routers
-routes(app);
+routes(io,app);
 
 console.log('Express server listening on port ' + app.get('port'));

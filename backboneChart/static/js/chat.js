@@ -2,6 +2,18 @@
  * backbone webChat前端模块
  */
 
+WEB_SOCKET_SWF_LOCATION = "/static/WebSocketMain.swf";
+WEB_SOCKET_DEBUG = true;
+
+var socket = io.connect();
+socket.on("connect", function () {
+    console.log('connected');
+});
+
+$(window).bind("beforeunload", function () {
+    socket.disconnect();
+});
+
 var appRouter,      //  路由控制
     g_user;         //  全局缓存用户
 
@@ -17,7 +29,15 @@ var Topic = Backbone.Model.extend({
 
 //  消息模型
 var Message = Backbone.Model.extend({
-    "urlRoot": "/message"
+    "urlRoot": "/message",
+    "sync": function (method, model, options) {
+        if (method === "create") {
+            socket.emit("message", model.attributes);
+            $("#comment").val("");
+        } else {
+            return Backbone.sync(method, model, options);
+        }
+    }
 });
 
 //  话题集合
@@ -32,11 +52,14 @@ var Messages = Backbone.Collection.extend({
     "model": Message
 });
 
+var topics = new Topics();
+
 //  主题视图
 var TopicView = Backbone.View.extend({
     "tagName": "div class='column'",
     "templ": _.template($("#topic-template").html()),
     "render": function () {
+        console.log(this.model.toJSON());
         $(this.el).html(this.templ(this.model.toJSON()));
         return this;
     }
@@ -81,7 +104,7 @@ var AppView = Backbone.View.extend({
         topics.bind("add", this.addTopic);
 
         this.message_pool = {};
-        this.message_list_div = document.getElementById("message_list");
+        this.message_list_div = $("#message_list");
     },
     "addTopic": function (topic) {
         var view = new TopicView({
@@ -112,15 +135,15 @@ var AppView = Backbone.View.extend({
         message.save(null, {
             "success": function (model, res, opt) {
                 comment_box.val("");
-                messages.fetch({
-                    "data": {
-                        "topic_id": topic_id
-                    },
-                    "success": function () {
-                        self.message_list.scrollTop(self.message_list_div.scrollHeight);
-                        message.add(res);
-                    }
-                });
+                //messages.fetch({
+                //    "data": {
+                //        "topic_id": topic_id
+                //    },
+                //    "success": function () {
+                //        self.message_list.scrollTop(self.message_list_div.scrollHeight);
+                //        message.add(res);
+                //    }
+                //});
             }
         });
     },
@@ -145,10 +168,20 @@ var AppView = Backbone.View.extend({
         });
     },
     "showTopic": function () {
-        Topics.fetch();
+        topics.fetch(null, {
+            "success": function (collection, res, opt) {
+                console.log(res);
+            }
+        });
         this.topic_section.show();
         this.message_section.hide();
         this.message_list.html("");
+        this.goOut();
+    },
+    "goOut": function () {
+        // 退出房间
+        socket.emit("go_out");
+        socket.removeAllListeners("message");
     },
     "initMessage": function (topic_id) {
         var messages = new Messages();
@@ -162,6 +195,10 @@ var AppView = Backbone.View.extend({
         this.showMessageHead(topic_id);
         var messages = this.message_pool[topic_id];
         var self = this;
+        socket.emit("topic", topic_id);
+        socket.on("message", function (res) {
+            messages.add(res);
+        });
         messages.fetch({
             "data": {
                 "topic_id": topic_id
@@ -248,7 +285,7 @@ var LoginView = Backbone.View.extend({
 });
 
 //  定义路由
-var AppRoute = Backbone.Router.extend({
+var AppRouter = Backbone.Router.extend({
     "routes": {
         "login": "login",
         "index": "index",
@@ -282,19 +319,21 @@ var AppRoute = Backbone.Router.extend({
 });
 
 //  程序启动
-appRouter = new AppRoute();
+appRouter = new AppRouter();
 g_user = new User();
 g_user.fetch({
     "success": function (model, res, opt) {
-        g_user = res;
+        if (res["user"]) {
+            g_user = res["user"];
+        }
         Backbone.history.start();
-        if(g_user == null || g_user.id == undefined){
-            appRouter.navigate("login",{
-                "trigger":true
+        if (g_user == null || g_user.id == undefined) {
+            appRouter.navigate("login", {
+                "trigger": true
             });
-        }else if(appRouter.indexFlag == false){
-            appRouter.navigate("index",{
-                "trigger":true
+        } else if (appRouter.indexFlag == false) {
+            appRouter.navigate("index", {
+                "trigger": true
             });
         }
     }

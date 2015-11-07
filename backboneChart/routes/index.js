@@ -4,9 +4,11 @@
 
 var Models = require("../models").Models;
 var Util = require("../Util");
-var socket = require('../socket');
 
-module.exports = function (app) {
+module.exports = function (io,app) {
+
+    io.listen(app.listen(app.get('port')));
+    //  启动socket端口
 
     /**
      * 用户注册
@@ -45,6 +47,38 @@ module.exports = function (app) {
      * 获取用户列表
      */
     app.get("/user", function (req, res) {
+        req.session.user = {
+            "id": "b35c4fa3fb62e60432e05b88926f5ee0",
+            "username": "小宋",
+            "password": "7c4a8d09ca3762af61e59520943dc26494f8941b",
+            "register_time": {
+                "year": "2015",
+                "month": "2015-11",
+                "day": "2015-11-06",
+                "minutes": "2015-11-06 12:43",
+                "seconds": "2015-11-06 12:43:48"
+            },
+            "_id": "563c3004e65c50b410000001",
+            "__v": 0
+        };
+        res.send(200, {
+            "code": 200,
+            "user": {
+                "id": "b35c4fa3fb62e60432e05b88926f5ee0",
+                "username": "小宋",
+                "password": "7c4a8d09ca3762af61e59520943dc26494f8941b",
+                "register_time": {
+                    "year": "2015",
+                    "month": "2015-11",
+                    "day": "2015-11-06",
+                    "minutes": "2015-11-06 12:43",
+                    "seconds": "2015-11-06 12:43:48"
+                },
+                "_id": "563c3004e65c50b410000001",
+                "__v": 0
+            }
+        });
+        return;
         if (req.session.user) {
             return res.send(200, {
                 "code": 200,
@@ -128,12 +162,12 @@ module.exports = function (app) {
      * 新建话题
      */
     app.post("/topic", function (req, res) {
-        console.log(req.session);
         var Topic = new Models.Topic({
             "id": Util.randomId(),
             "title": req.body.title,
-            "create_time": Util.getTime(),
-            "owner": req.session.user["id"]
+            "created_time": Util.getTime(),
+            "owner": req.session.user["id"],
+            "owner_name": req.session.user["username"]
         });
         Models.Topic.find({
             "title": req.body.title
@@ -162,7 +196,17 @@ module.exports = function (app) {
      * 查看具体话题
      */
     app.get("/topic/:id", function (req, res) {
-        Models.Topic.findById(req.params.id, function (err, topic) {
+        Models.Topic.find({
+            "id": req.params.id
+        }, function (err, topic) {
+            if (err) {
+                console.log(err);
+                return res.send(500, err);
+            }
+            res.send(200, {
+                "code": 200,
+                "topic": topic
+            });
         });
     });
 
@@ -170,20 +214,63 @@ module.exports = function (app) {
      * 发送消息
      */
     app.post("/message", function (req, res) {
+        var Message = new Models.Message({
+            "id": Util.randomId(),
+            "content": req.body.content,
+            "topic_id": req.body.topic_id,
+            "user_id": req.session.user["id"],
+            "created_time": Util.getTime()
+        });
+        Message.save(function (err, message) {
+            if (err) {
+                console.log(err);
+                return res.send(500, err);
+            }
+            res.send(200, {
+                "code": 200,
+                "message": message
+            });
+        });
     });
 
     /**
-     * 浏览某条消息
+     * 浏览某个话题下的消息
      */
-    app.get("/message/:id", function (req, res) {
+    app.get("/message", function (req, res) {
+        console.log(req.query.topic_id);
+        Models.Message.find({
+            "topic_id":req.query.topic_id
+        },function(err,messages){
+            if (err) {
+                console.log(err);
+                return res.send(500, err);
+            }
+            res.send(200, {
+                "code": 200,
+                "message": messages
+            });
+        });
     });
 
     /**
      * 删除某条消息
      */
     app.delete("/message/:id", function (req, res) {
+        Models.Message.findOneAndRemove()
     });
 
+    console.log(io);
+
+
+
+    /**
+     * 创建一条新消息
+     */
+    io.Socket.on("connection",function(socket){
+
+    });
+
+    //  上述路由不匹配,全部输出static目录下的index.html做响应
     app.use(function (req, res) {
         res.sendfile("static/index.html");
     });

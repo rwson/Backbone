@@ -12,15 +12,16 @@ var exportObj = {
     "Topic": new mongoose.Schema({
         "id": String,
         "title": String,
-        "create_time": Object,
-        "owner": String
+        "created_time": Object,
+        "owner": String,
+        "owner_name":String
     }),
     "Message": new mongoose.Schema({
         "id": String,
         "content": String,
         "top_id": String,
         "user_id": String,
-        "create_time": Object
+        "created_time": Object
     })
 };
 
