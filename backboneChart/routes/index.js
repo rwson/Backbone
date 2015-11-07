@@ -7,7 +7,7 @@ var Util = require("../Util");
 
 module.exports = function (io,app) {
 
-    io.listen(app.listen(app.get('port')));
+    var ioInstance = io.listen(app.listen(app.get('port')));
     //  启动socket端口
 
     /**
@@ -259,15 +259,13 @@ module.exports = function (io,app) {
         Models.Message.findOneAndRemove()
     });
 
-    console.log(io);
-
-
-
     /**
      * 创建一条新消息
      */
-    io.Socket.on("connection",function(socket){
-
+    ioInstance.sockets.on("connection",function(socket){
+        socket.on("message",function(message){
+            console.log(message);
+        });
     });
 
     //  上述路由不匹配,全部输出static目录下的index.html做响应
